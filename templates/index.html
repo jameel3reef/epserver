@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enumeration and Attacking Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 2% 0px 0px 0px;
+            padding: 20px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #007bff;
+            padding: 10px;
+            margin-bottom: 20px;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #0056b3;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .file-section {
+            width: 100%;
+        }
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .table-group {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 48%;
+            border-collapse: collapse;
+            margin: 10px 5px 5px 5px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px 8px 0 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: large;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            width: 50%;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+        .popup {
+            visibility: hidden;
+            width: 200px;
+            background-color: #229100;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 10px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .popup.show {
+            visibility: visible;
+            opacity: 0.8;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: small;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/uploaded_files">Uploaded Files</a>
+        <a href="#" onclick="copyToClipboard1('curl http:\/\/'+document.domain+'/upload -F \'f=@\' ','w')">Upload File</a>
+    </div>
+    <h1>Enumeration and Attacking Server</h1>
+    
+    <div class="table-container">
+        <div class="file-section">
+            <h2>Linux Files</h2>
+            <div class="table-group">
+                <table>
+                    <tr>
+                        <th style="height: 50px;">Enumeration</th>
+                    </tr>
+                    {% for file in linux_files['enumeration'] %}
+                    <tr onclick="copyToClipboard('/{{file}}')">
+                        <td>{{ file.split('/')[-1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <table>
+                    <tr>
+                        <th style="height: 50px;">Attacking</th>
+                    </tr>
+                    {% for file in linux_files['attacking'] %}
+                    <tr onclick="copyToClipboard('/{{file}}')">
+                        <td>{{ file.split('/')[-1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="file-section">
+            <h2>Windows Files</h2>
+            <div class="table-group">
+                <table>
+                    <tr>
+                        <th style="height: 50px;">Enumeration</th>
+                    </tr>
+                    {% for file in windows_files['enumeration'] %}
+                    <tr onclick="copyToClipboard('/{{file}}')">
+                        <td>{{ file.split('/')[-1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <table>
+                    <tr>
+                        <th style="height: 50px;">Attacking</th>
+                    </tr>
+                    {% for file in windows_files['attacking'] %}
+                    <tr onclick="copyToClipboard('/{{file}}')">
+                        <td>{{ file.split('/')[-1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">Link copied to clipboard</div>
+    <footer>
+        &copy; 2024 MrAlphaQ. All rights reserved.
+    </footer>
+    <script>
+        function copyToClipboard(link,w) {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.origin + link;
+            if (w) {
+                dummy.value = link;
+            }
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            const popup = document.getElementById('popup');
+            popup.classList.add('show');
+
+            setTimeout(function() {
+                popup.classList.remove('show');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

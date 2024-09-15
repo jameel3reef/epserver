@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 2% 0px 0px 0px;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #007bff;
+            padding: 10px;
+            margin-bottom: 20px;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            background-color: #0056b3;
+            border-radius: 5px;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: large;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+        }
+        .action-buttons button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .action-buttons button:hover {
+            background-color: #c82333;
+        }
+        .download-link {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .download-link:hover {
+            text-decoration: underline;
+        }
+        .popup {
+            visibility: hidden;
+            width: 200px;
+            background-color: #229100;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 10px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .popup.show {
+            visibility: visible;
+            opacity: 0.8;
+        }
+        .no-files-message {
+            text-align: center;
+            font-size: larger;
+            color: #666;
+            margin-top: 40px;
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: small;
+            color: #666;
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/uploaded_files">Uploaded Files</a>
+        <a href="#" onclick="copyToClipboard('curl http:\/\/'+document.domain+'/upload -F \'f=@\' ','w')">Upload File</a>
+    </div>
+
+    <h1>Uploaded Files</h1>
+    {% if files %}
+    <table>
+        <tr>
+            <th>Filename</th>
+            <th>Actions</th>
+        </tr>
+        {% for file in files %}
+        <tr>
+            <td>{{ file }}</td>
+            <td class="action-buttons">
+                <a class="download-link" href="/uploads/{{file}}" download>Download</a>
+                <form action="{{ url_for('delete_file', filename=file) }}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="no-files-message">Waiting for files</div>
+    {% endif %}
+    <div id="popup" class="popup">Command copied to clipboard</div>
+    <footer>
+        &copy; 2024 MrAlphaQ. All rights reserved.
+    </footer>
+    <script>
+        function copyToClipboard(link,w) {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.origin + link;
+            if (w) {
+                dummy.value = link;
+            }
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            const popup = document.getElementById('popup');
+            popup.classList.add('show');
+
+            setTimeout(function() {
+                popup.classList.remove('show');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
